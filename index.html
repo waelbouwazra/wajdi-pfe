@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GRISK — Détection des Risques Géotechniques</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1a3a5c;
+      --primary-light: #2a5080;
+      --accent: #e67e22;
+      --accent-light: #f39c12;
+      --danger: #c0392b;
+      --danger-light: #e74c3c;
+      --warning: #d35400;
+      --warning-light: #e67e22;
+      --medium: #2980b9;
+      --medium-light: #3498db;
+      --success: #1a6b3c;
+      --success-light: #27ae60;
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --border: #dde2ea;
+      --text: #1c2b3a;
+      --text-muted: #637488;
+      --shadow: 0 2px 12px rgba(0,0,0,.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.13);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── VIEWS ─────────────────────────────────────────── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ─── LOGIN ──────────────────────────────────────────── */
+    #login-view {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f2744 0%, #1a3a5c 50%, #1e4976 100%);
+    }
+
+    .login-card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 28px;
+    }
+
+    .login-logo h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+
+    .login-logo p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      color: var(--text);
+      background: #fafbfc;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+      appearance: none;
+    }
+
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='%23637488' d='M6 7L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,58,92,.12);
+      background: #fff;
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-light), #3a6090);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(26,58,92,.3);
+    }
+
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      color: #fff;
+    }
+
+    .btn-accent:hover {
+      background: linear-gradient(135deg, var(--accent-light), #f5b041);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(230,126,34,.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ─── APP LAYOUT ─────────────────────────────────────── */
+    #app-view {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      background: var(--primary);
+      padding: 0 32px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+    }
+
+    .topbar-brand .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: rgba(255,255,255,.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .topbar-brand h2 {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .topbar-brand span {
+      font-size: 11px;
+      opacity: .65;
+      font-weight: 400;
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: rgba(255,255,255,.85);
+      font-size: 13px;
+    }
+
+    .btn-logout {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.2);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .btn-logout:hover { background: rgba(255,255,255,.22); }
+
+    .app-main {
+      flex: 1;
+      padding: 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ─── PAGE HEADER ────────────────────────────────────── */
+    .page-header {
+      margin-bottom: 28px;
+    }
+
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .page-header p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ─── FORM CARD ──────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--bg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: var(--primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 28px;
+    }
+
+    @media (max-width: 680px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .app-main { padding: 16px; }
+    }
+
+    .form-group .hint {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-group .input-unit {
+      position: relative;
+    }
+
+    .form-group .input-unit input {
+      padding-right: 50px;
+    }
+
+    .form-group .input-unit .unit {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      align-items: center;
+    }
+
+    /* ─── RESULTS ─────────────────────────────────────────── */
+    #results-section { display: none; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-summary {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .summary-chip {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip-danger { background: #fde8e8; color: var(--danger); border: 1px solid #f5c6c6; }
+    .chip-warning { background: #fef0e2; color: var(--warning); border: 1px solid #f8d5b0; }
+    .chip-medium { background: #e3f0fb; color: var(--medium); border: 1px solid #b0d4f1; }
+    .chip-ok { background: #e3f7ed; color: var(--success); border: 1px solid #a8dfc0; }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+      gap: 18px;
+    }
+
+    @media (max-width: 540px) {
+      .risk-grid { grid-template-columns: 1fr; }
+    }
+
+    .risk-card {
+      border-radius: 10px;
+      border: 1.5px solid;
+      overflow: hidden;
+    }
+
+    .risk-card.level-critique { border-color: #f5c6c6; background: #fff8f8; }
+    .risk-card.level-élevée { border-color: #f8d5b0; background: #fffaf5; }
+    .risk-card.level-moyenne { border-color: #b0d4f1; background: #f5faff; }
+
+    .risk-card-header {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .level-critique .risk-card-header { background: #fde8e8; }
+    .level-élevée .risk-card-header { background: #fef0e2; }
+    .level-moyenne .risk-card-header { background: #e3f0fb; }
+
+    .risk-name {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .level-critique .risk-name { color: var(--danger); }
+    .level-élevée .risk-name { color: var(--warning); }
+    .level-moyenne .risk-name { color: var(--medium); }
+
+    .risk-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .level-critique .risk-badge { background: var(--danger); color: #fff; }
+    .level-élevée .risk-badge { background: var(--warning); color: #fff; }
+    .level-moyenne .risk-badge { background: var(--medium); color: #fff; }
+
+    .risk-card-body {
+      padding: 16px 18px;
+    }
+
+    .risk-section {
+      margin-bottom: 12px;
+    }
+
+    .risk-section:last-child { margin-bottom: 0; }
+
+    .risk-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .risk-section-content {
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .trigger-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .trigger-tag {
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tag-primary { background: #fde8e8; color: var(--danger); }
+    .tag-aggravant { background: #fff3cd; color: #856404; }
+
+    .no-risk-banner {
+      background: #e3f7ed;
+      border: 1.5px solid #a8dfc0;
+      border-radius: 10px;
+      padding: 28px;
+      text-align: center;
+      color: var(--success);
+    }
+
+    .no-risk-banner .icon { font-size: 36px; margin-bottom: 8px; }
+    .no-risk-banner h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .no-risk-banner p { font-size: 14px; opacity: .8; }
+
+    /* aggravation indicator */
+    .severity-bar {
+      height: 5px;
+      border-radius: 3px;
+      background: var(--bg);
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .severity-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .6s ease;
+    }
+
+    .level-critique .severity-fill { background: var(--danger); }
+    .level-élevée .severity-fill { background: var(--warning); }
+    .level-moyenne .severity-fill { background: var(--medium); }
+
+    optgroup { color: var(--primary); font-style: normal; }
+
+    /* Loading state */
+    .analyzing {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     LOGIN VIEW
+═══════════════════════════════════════════════════════ -->
+<div id="login-view" class="view active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">⚠</div>
+      <h1>GRISK</h1>
+      <p>Détection des Risques Géotechniques</p>
+    </div>
+
+    <div class="form-group">
+      <label>Adresse e-mail</label>
+      <input type="email" id="login-email" placeholder="votre@email.com" autocomplete="username" />
+    </div>
+
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+      <div class="error-msg" id="login-error">Identifiants incorrects. Veuillez réessayer.</div>
+    </div>
+
+    <button class="btn btn-primary" onclick="doLogin()">
+      <span>Connexion</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     APP VIEW
+═══════════════════════════════════════════════════════ -->
+<div id="app-view" class="view">
+
+  <nav class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon">⚠</div>
+      <div>
+        <h2>GRISK</h2>
+        <span>Risques Géotechniques — Tunisie</span>
+      </div>
+    </div>
+    <div class="topbar-user">
+      <span id="user-label"></span>
+      <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </nav>
+
+  <main class="app-main">
+    <div class="page-header">
+      <h1>Analyse d'un Nouveau Chantier</h1>
+      <p>Renseignez les paramètres du site pour détecter les risques géotechniques applicables.</p>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">⚙</span>
+        Paramètres du Chantier
+      </div>
+
+      <div class="form-grid">
+
+        <!-- Type de sol -->
+        <div class="form-group">
+          <label>Type de sol</label>
+          <select id="f-sol">
+            <option value="">— Sélectionner —</option>
+            <optgroup label="Sols cohérents (argiles)">
+              <option>Argile gonflante</option>
+              <option>Argile marneuse</option>
+              <option>Argile molle</option>
+              <option>Argile plastique</option>
+              <option>Argile raide</option>
+              <option>Sol expansif</option>
+            </optgroup>
+            <optgroup label="Sols fins peu cohérents (limons)">
+              <option>Limon</option>
+              <option>Limon argileux</option>
+              <option>Limon sableux</option>
+            </optgroup>
+            <optgroup label="Sols granulaires">
+              <option>Grave</option>
+              <option>Grave argileuse</option>
+              <option>Grave limoneuse</option>
+              <option>Gravier</option>
+              <option>Gravier sableux</option>
+              <option>Sable argileux</option>
+              <option>Sable fin</option>
+              <option>Sable graveleux</option>
+              <option>Sable grossier</option>
+              <option>Sable limoneux</option>
+              <option>Sable moyen</option>
+              <option>Sol sablo-argileux</option>
+            </optgroup>
+            <optgroup label="Sols organiques">
+              <option>Vase</option>
+              <option>Tourbe</option>
+              <option>Sol organique</option>
+            </optgroup>
+            <optgroup label="Roches">
+              <option>Basalte</option>
+              <option>Calcaire</option>
+              <option>Calcaire fissuré</option>
+              <option>Craie</option>
+              <option>Granite</option>
+              <option>Marne</option>
+              <option>Roche altérée</option>
+              <option>Roche fracturée</option>
+              <option>Roche saine</option>
+              <option>Schiste</option>
+              <option>Tuf</option>
+            </optgroup>
+            <optgroup label="Sols géologiques spécifiques">
+              <option>Alluvions</option>
+              <option>Colluvions</option>
+              <option>Dépôts éoliens</option>
+              <option>Dépôts fluviaux</option>
+              <option>Dépôts marins</option>
+            </optgroup>
+            <optgroup label="Sols artificiels">
+              <option>Remblai compacté</option>
+              <option>Remblai non compacté</option>
+            </optgroup>
+            <optgroup label="Sols par état mécanique">
+              <option>Sol dense</option>
+              <option>Sol hétérogène</option>
+              <option>Sol latéritique</option>
+              <option>Sol meuble</option>
+              <option>Sol saturé</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Méthode -->
+        <div class="form-group">
+          <label>Type des travaux (Méthode)</label>
+          <select id="f-methode">
+            <option value="">— Sélectionner —</option>
+            <option>Pieux Forés</option>
+            <option>Pieux CFA (Continuous Flight Auger)</option>
+            <option>Pieux battus métalliques</option>
+            <option>Pieux battus préfabriqués béton</option>
+            <option>Pieux hélicoïdaux</option>
+            <option>Pieux inclinés</option>
+            <option>Pieux vibrofoncés</option>
+            <option>Parois moulées</option>
+            <option>Parois sécantes</option>
+            <option>Jet grouting</option>
+          </select>
+        </div>
+
+        <!-- Profondeur -->
+        <div class="form-group">
+          <label>Profondeur</label>
+          <div class="input-unit">
+            <input type="number" id="f-profondeur" min="1" max="100" step="0.5" placeholder="ex. 20" />
+            <span class="unit">m</span>
+          </div>
+          <div class="hint">Profondeur totale du forage / battage</div>
+        </div>
+
+        <!-- Nappe -->
+        <div class="form-group">
+          <label>Profondeur de la nappe</label>
+          <div class="input-unit">
+            <input type="number" id="f-nappe" min="0" max="50" step="0.5" placeholder="ex. 3.5" />
+            <span class="unit">m</span>
+          </div>
+          <div class="hint">Profondeur de la nappe phréatique depuis la surface (valeur faible = nappe élevée)</div>
+        </div>
+
+        <!-- Diamètre -->
+        <div class="form-group">
+          <label>Diamètre</label>
+          <div class="input-unit">
+            <input type="number" id="f-diametre" min="100" max="3000" step="50" placeholder="ex. 600" />
+            <span class="unit">mm</span>
+          </div>
+          <div class="hint">Diamètre du pieu / forage</div>
+        </div>
+
+        <!-- Environnement -->
+        <div class="form-group">
+          <label>Environnement</label>
+          <select id="f-env">
+            <option value="">— Sélectionner —</option>
+            <optgroup label="Urbains & Anthropiques">
+              <option>Zone agricole</option>
+              <option>Zone avec bâtiments sensibles</option>
+              <option>Zone avec infrastructures sensibles (ponts, métro)</option>
+              <option>Zone avec réseaux enterrés</option>
+              <option>Zone industrielle</option>
+              <option>Zone portuaire</option>
+              <option>Zone résidentielle</option>
+              <option>Zone rurale</option>
+              <option>Zone urbaine dense</option>
+            </optgroup>
+            <optgroup label="Naturels & Géographiques">
+              <option>Zone désertique</option>
+              <option>Zone fluviale</option>
+              <option>Zone maritime</option>
+              <option>Zone montagneuse</option>
+              <option>Zone offshore</option>
+            </optgroup>
+            <optgroup label="Hydrogéologiques">
+              <option>Zone à nappe phréatique élevée</option>
+            </optgroup>
+            <optgroup label="Géotechniques Spécifiques">
+              <option>Zone argileuse molle</option>
+              <option>Zone compressible</option>
+              <option>Zone instable (glissement)</option>
+              <option>Zone rocheuse</option>
+              <option>Zone sablonneuse</option>
+            </optgroup>
+            <optgroup label="Contraintes Opérationnelles">
+              <option>Zone à accès limité</option>
+              <option>Zone à contraintes sonores réglementées</option>
+              <option>Zone à forte contrainte planning</option>
+              <option>Zone à fortes contraintes de vibration</option>
+              <option>Zone protégée environnementalement</option>
+              <option>Zone sismique</option>
+            </optgroup>
+          </select>
+        </div>
+
+      </div><!-- /form-grid -->
+
+      <div class="form-actions" style="margin-top:24px;">
+        <button class="btn btn-accent" onclick="analyzeRisks()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Analyser les risques
+        </button>
+        <button class="btn btn-outline" onclick="resetForm()">Réinitialiser</button>
+        <div class="analyzing" id="analyzing">
+          <div class="spinner"></div>
+          <span>Analyse en cours…</span>
+        </div>
+      </div>
+    </div><!-- /card -->
+
+    <!-- RESULTS -->
+    <div id="results-section">
+      <div class="results-header">
+        <div>
+          <h2 style="font-size:18px;font-weight:700;color:var(--primary);">Résultats de l'Analyse</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:2px;" id="results-subtitle"></p>
+        </div>
+        <div id="results-chips" class="results-summary"></div>
+      </div>
+      <div id="risk-cards-container"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════
+const CREDENTIALS = { email: 'wajdimnari@gmail.com', password: 'Wajdi123' };
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-password').value;
+  const err = document.getElementById('login-error');
+
+  if (email === CREDENTIALS.email && pw === CREDENTIALS.password) {
+    sessionStorage.setItem('grisk_user', email);
+    err.style.display = 'none';
+    showApp();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('login-password').value = '';
+  }
+}
+
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('login-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-password').focus();
+});
+
+function doLogout() {
+  sessionStorage.removeItem('grisk_user');
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-error').style.display = 'none';
+  showView('login-view');
+  document.getElementById('results-section').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('user-label').textContent = sessionStorage.getItem('grisk_user');
+  showView('app-view');
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// Auto-login if session active
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('grisk_user')) showApp();
+});
+
+// ═══════════════════════════════════════════════════════
+//  RISK DATA
+// ═══════════════════════════════════════════════════════
+const RISK_DB = [
+  {
+    id: 'R01',
+    nom: 'Effondrement des parois',
+    definition: 'Instabilité et effondrement des parois du forage pendant ou après le forage, pouvant entraîner la perte partielle ou totale du trou.',
+    methods: ['Pieux Forés', 'Parois moulées', 'Parois sécantes'],
+    primaryTriggers: ['sol_granulaire', 'nappe_elevee'],
+    aggravatingTriggers: ['sol_meuble', 'grande_profondeur'],
+    consequences: 'Perte du trou, surconsommation de boue bentonitique, risques de tassements en surface, effondrement partiel du chantier.',
+    preventive: 'Utiliser la boue bentonitique ou le tubage provisoire, maintenir le niveau de boue au-dessus de la nappe, limiter le temps d\'exposition des parois.',
+    corrective: 'Reforage avec tubage intégral, injection de coulis de ciment, consolidation préalable du sol (jet grouting).',
+    baseCriticite: 'Élevée'
+  },
+  {
+    id: 'R02',
+    nom: 'Déviation du pieu',
+    definition: 'Déviation de l\'axe du pieu par rapport à la verticalité ou à la position prévue, liée à la présence d\'hétérogénéités ou d\'obstacles dans le sol.',
+    methods: ['Pieux Forés', 'Pieux CFA (Continuous Flight Auger)', 'Pieux hélicoïdaux', 'Pieux inclinés'],
+    primaryTriggers: ['sol_heterogene', 'roche_dense'],
+    aggravatingTriggers: ['grande_profondeur', 'grand_diametre'],
+    consequences: 'Non-respect des tolérances de positionnement, reprise des têtes de pieux, modifications de la structure de fondation, surcoûts importants.',
+    preventive: 'Contrôle d\'inclinométrie en cours de forage, utilisation d\'outils de guidage, reconnaissance géotechnique approfondie.',
+    corrective: 'Pieux compensatoires, élargissement de la semelle de liaison, modification du ferraillage.',
+    baseCriticite: 'Moyenne'
+  },
+  {
+    id: 'R03',
+    nom: 'Refus prématuré',
+    definition: 'Arrêt inopiné du battage avant d\'atteindre la côte de refus prévue, dû à la rencontre d\'un obstacle rocheux ou d\'une couche très dense.',
+    methods: ['Pieux battus métalliques', 'Pieux battus préfabriqués béton', 'Pieux vibrofoncés'],
+    primaryTriggers: ['roche_dense'],
+    aggravatingTriggers: ['grande_profondeur'],
+    consequences: 'Pieu trop court, capacité portante insuffisante, risque de rupture du pieu par excès de battage, arrêt du chantier.',
+    preventive: 'Sondages carottés préalables, essais de battage préliminaires, adapter la méthode au contexte géologique.',
+    corrective: 'Passage en forage, pré-forage dans la couche dure, renforcement de fondation par micropieux.',
+    baseCriticite: 'Élevée'
+  },
+  {
+    id: 'R04',
+    nom: 'Surconsommation de béton',
+    definition: 'Volume de béton mis en œuvre nettement supérieur au volume théorique du pieu, indiquant des pertes dans le terrain environnant.',
+    methods: ['Pieux Forés', 'Jet grouting', 'Parois moulées', 'Pieux CFA (Continuous Flight Auger)'],
+    primaryTriggers: ['sol_granulaire', 'nappe_elevee', 'cavites_naturelles'],
+    aggravatingTriggers: ['grande_profondeur', 'grand_diametre'],
+    consequences: 'Surcoût majeur, poids excessif non prévu, risque de bulbes de béton hors-profil, perturbation des ouvrages voisins.',
+    preventive: 'Contrôle du volume de béton en continu, reconnaissance des cavités, utilisation de tubage provisoire.',
+    corrective: 'Injection de coulis de remplissage, reprise de l\'estimation volumétrique, surveillance par radar géologique.',
+    baseCriticite: 'Moyenne'
+  },
+  {
+    id: 'R05',
+    nom: 'Cavité imprévue',
+    definition: 'Rencontre d\'une cavité naturelle (karst, vide géologique) ou anthropique (ancienne galerie, puits) lors du forage.',
+    methods: ['Pieux Forés', 'Jet grouting', 'Parois moulées'],
+    primaryTriggers: ['cavites_naturelles', 'roche_dense'],
+    aggravatingTriggers: ['grande_profondeur'],
+    consequences: 'Perte soudaine des outils de forage, effondrement local, risque de dommages en surface, projet compromis.',
+    preventive: 'Tomographies électriques, sondages géophysiques, étude historique du site (carrières, mines), imagerie souterraine.',
+    corrective: 'Remplissage bétonné des cavités, re-forage en déviation, fondations profondes alternatives.',
+    baseCriticite: 'Élevée'
+  },
+  {
+    id: 'R06',
+    nom: 'Blocage de la tarière',
+    definition: 'Blocage irrémédiable de la tarière CFA ou de l\'outil de forage en cours d\'exécution, nécessitant son extraction en urgence.',
+    methods: ['Pieux CFA (Continuous Flight Auger)', 'Pieux Forés'],
+    primaryTriggers: ['roche_dense'],
+    aggravatingTriggers: ['sol_heterogene', 'grand_diametre'],
+    consequences: 'Immobilisation du matériel, endommagement de l\'outil, coûts de réparation élevés, retard chantier important.',
+    preventive: 'Pré-forage dans les zones denses, choix d\'un outillage adapté, suivi du couple de rotation.',
+    corrective: 'Extraction à la grue, forage alternatif, intervention de spécialistes en récupération d\'outils.',
+    baseCriticite: 'Élevée'
+  },
+  {
+    id: 'R07',
+    nom: 'Mauvaise injection / Jet grouting défectueux',
+    definition: 'Injection ou traitement au jet grouting inefficace, conduisant à une colonne non homogène ou des pertes de coulis excessives.',
+    methods: ['Jet grouting', 'Pieux CFA (Continuous Flight Auger)'],
+    primaryTriggers: ['sol_granulaire', 'nappe_elevee'],
+    aggravatingTriggers: ['grande_profondeur'],
+    consequences: 'Résistance mécanique insuffisante, colonne de traitement de diamètre réduit, refus de la prestation, reprise totale.',
+    preventive: 'Essais préalables de jet grouting, contrôle du débit et de la pression, carottage de contrôle après traitement.',
+    corrective: 'Colonnes complémentaires, modification des paramètres d\'injection, injection de consolidation.',
+    baseCriticite: 'Élevée'
+  },
+  {
+    id: 'R08',
+    nom: 'Perte de verticalité',
+    definition: 'Inclinaison excessive du pieu au-delà des tolérances admissibles, compromettant la reprise des charges horizontales.',
+    methods: ['Pieux Forés', 'Pieux CFA (Continuous Flight Auger)', 'Pieux hélicoïdaux', 'Pieux inclinés', 'Pieux battus métalliques'],
+    primaryTriggers: ['sol_heterogene', 'sol_meuble'],
+    aggravatingTriggers: ['grande_profondeur', 'grand_diametre'],
+    consequences: 'Excentricité des efforts, sous-dimensionnement en tête, risque de rupture en flexion composée, non-conformité.',
+    preventive: 'Contrôle de verticalité en temps réel (inclinomètre intégré), réglage de l\'équipement de forage, terrain préparé.',
+    corrective: 'Modification du ferraillage, ajout de pieux supplémentaires, reprise de calcul de la semelle.',
+    baseCriticite: 'Moyenne'
+  }
+];
+
+// ═══════════════════════════════════════════════════════
+//  CONDITION CLASSIFIER
+// ═══════════════════════════════════════════════════════
+const SOL_GRANULAIRE = new Set([
+  'Grave','Grave argileuse','Grave limoneuse','Gravier','Gravier sableux',
+  'Sable argileux','Sable fin','Sable graveleux','Sable grossier',
+  'Sable limoneux','Sable moyen','Sol sablo-argileux',
+  'Alluvions','Dépôts fluviaux','Dépôts éoliens','Sol saturé'
+]);
+
+const SOL_MEUBLE = new Set([
+  'Argile molle','Limon','Limon argileux','Limon sableux',
+  'Sol meuble','Vase','Tourbe','Sol organique','Sol saturé',
+  'Zone argileuse molle'
+]);
+
+const SOL_HETEROGENE = new Set([
+  'Sol hétérogène','Remblai non compacté','Colluvions',
+  'Alluvions','Dépôts fluviaux','Dépôts éoliens','Dépôts marins',
+  'Remblai compacté'
+]);
+
+const ROCHE_DENSE = new Set([
+  'Basalte','Calcaire','Calcaire fissuré','Craie','Granite',
+  'Marne','Roche altérée','Roche fracturée','Roche saine',
+  'Schiste','Tuf','Sol dense'
+]);
+
+const CAVITES_NAT = new Set([
+  'Calcaire fissuré','Roche fracturée','Roche altérée','Tuf'
+]);
+
+function classifyConditions(sol, profondeur, diametre, nappe, env) {
+  return {
+    sol_granulaire: SOL_GRANULAIRE.has(sol),
+    nappe_elevee: nappe !== null && nappe < 3.0,
+    sol_heterogene: SOL_HETEROGENE.has(sol),
+    roche_dense: ROCHE_DENSE.has(sol),
+    sol_meuble: SOL_MEUBLE.has(sol),
+    cavites_naturelles: CAVITES_NAT.has(sol)
+      || env.includes('instable')
+      || env.includes('rocheuse')
+      || env.includes('Zone fluviale'),
+    grande_profondeur: profondeur !== null && profondeur > 20,
+    grand_diametre: diametre !== null && diametre > 800
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  ANALYZE
+// ═══════════════════════════════════════════════════════
+function analyzeRisks() {
+  const sol = document.getElementById('f-sol').value;
+  const methode = document.getElementById('f-methode').value;
+  const profRaw = document.getElementById('f-profondeur').value;
+  const nappeRaw = document.getElementById('f-nappe').value;
+  const diamRaw = document.getElementById('f-diametre').value;
+  const env = document.getElementById('f-env').value;
+
+  if (!sol || !methode) {
+    alert('Veuillez sélectionner au minimum le type de sol et la méthode de travaux.');
+    return;
+  }
+
+  const profondeur = profRaw !== '' ? parseFloat(profRaw) : null;
+  const nappe = nappeRaw !== '' ? parseFloat(nappeRaw) : null;
+  const diametre = diamRaw !== '' ? parseFloat(diamRaw) : null;
+
+  const cond = classifyConditions(sol, profondeur, diametre, nappe || 99, env);
+
+  const triggered = [];
+
+  for (const risk of RISK_DB) {
+    // Method must match
+    const methodMatch = risk.methods.some(m =>
+      m.toLowerCase().includes(methode.toLowerCase()) ||
+      methode.toLowerCase().includes(m.toLowerCase().split(' ')[0]) ||
+      methode === m
+    );
+    if (!methodMatch) continue;
+
+    // Check primary triggers
+    const activePrimary = risk.primaryTriggers.filter(t => cond[t]);
+    if (activePrimary.length === 0) continue;
+
+    // Count aggravating triggers
+    const activeAggravating = risk.aggravatingTriggers.filter(t => cond[t]);
+
+    // Compute effective criticité
+    let criticite = risk.baseCriticite;
+    if (activeAggravating.length >= 2) {
+      criticite = 'Critique';
+    } else if (activeAggravating.length === 1 && risk.baseCriticite === 'Élevée') {
+      criticite = 'Critique';
+    } else if (activeAggravating.length === 1 && risk.baseCriticite === 'Moyenne') {
+      criticite = 'Élevée';
+    }
+
+    // Severity score for sorting (0-100)
+    const baseScore = { 'Critique': 100, 'Élevée': 66, 'Moyenne': 33 }[criticite] || 33;
+    const score = baseScore;
+
+    triggered.push({ ...risk, criticite, activePrimary, activeAggravating, score });
+  }
+
+  // Sort by severity
+  triggered.sort((a, b) => b.score - a.score);
+
+  // Show results with a brief simulated delay
+  const analyzing = document.getElementById('analyzing');
+  analyzing.style.display = 'flex';
+  setTimeout(() => {
+    analyzing.style.display = 'none';
+    renderResults(triggered, sol, methode, profondeur, nappe, diametre, env);
+  }, 600);
+}
+
+const TRIGGER_LABELS = {
+  sol_granulaire: 'Sol granulaire',
+  nappe_elevee: 'Nappe élevée (< 3 m)',
+  sol_heterogene: 'Sol hétérogène',
+  roche_dense: 'Roche / Sol dense',
+  sol_meuble: 'Sol meuble',
+  cavites_naturelles: 'Cavités naturelles',
+  grande_profondeur: 'Grande profondeur (> 20 m)',
+  grand_diametre: 'Grand diamètre (> 800 mm)'
+};
+
+function renderResults(risks, sol, methode, prof, nappe, diam, env) {
+  const section = document.getElementById('results-section');
+  const container = document.getElementById('risk-cards-container');
+  const subtitle = document.getElementById('results-subtitle');
+  const chips = document.getElementById('results-chips');
+
+  const params = [sol, methode, prof ? prof + ' m' : null, nappe != null ? 'Nappe: ' + nappe + ' m' : null, diam ? diam + ' mm' : null, env].filter(Boolean);
+  subtitle.textContent = params.join(' · ');
+
+  // Summary chips
+  const critique = risks.filter(r => r.criticite === 'Critique').length;
+  const elevee = risks.filter(r => r.criticite === 'Élevée').length;
+  const moyenne = risks.filter(r => r.criticite === 'Moyenne').length;
+
+  chips.innerHTML = '';
+  if (critique > 0) chips.innerHTML += `<div class="summary-chip chip-danger">⛔ ${critique} Critique${critique > 1 ? 's' : ''}</div>`;
+  if (elevee > 0) chips.innerHTML += `<div class="summary-chip chip-warning">⚠ ${elevee} Élevé${elevee > 1 ? 's' : ''}</div>`;
+  if (moyenne > 0) chips.innerHTML += `<div class="summary-chip chip-medium">ℹ ${moyenne} Moyen${moyenne > 1 ? 's' : ''}</div>`;
+  if (risks.length === 0) chips.innerHTML += `<div class="summary-chip chip-ok">✓ Aucun risque détecté</div>`;
+
+  if (risks.length === 0) {
+    container.innerHTML = `
+      <div class="no-risk-banner">
+        <div class="icon">✓</div>
+        <h3>Aucun risque détecté</h3>
+        <p>Les paramètres saisis ne correspondent à aucun déclencheur de risque connu pour cette méthode.</p>
+      </div>`;
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+
+  container.innerHTML = `<div class="risk-grid">${risks.map(r => renderRiskCard(r)).join('')}</div>`;
+  section.style.display = 'block';
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderRiskCard(r) {
+  const levelClass = 'level-' + r.criticite.toLowerCase();
+  const severityPct = { 'Critique': 100, 'Élevée': 70, 'Moyenne': 40 }[r.criticite] || 40;
+
+  const critIcon = { 'Critique': '⛔', 'Élevée': '⚠', 'Moyenne': 'ℹ' }[r.criticite] || '';
+
+  const primaryTags = r.activePrimary.map(t =>
+    `<span class="trigger-tag tag-primary">● ${TRIGGER_LABELS[t]}</span>`
+  ).join('');
+
+  const aggTags = r.activeAggravating.length
+    ? r.activeAggravating.map(t =>
+        `<span class="trigger-tag tag-aggravant">▲ ${TRIGGER_LABELS[t]}</span>`
+      ).join('')
+    : '<span style="font-size:12px;color:var(--text-muted);">Aucun</span>';
+
+  const aggNote = r.activeAggravating.length > 0
+    ? `<div style="font-size:12px;color:var(--warning);font-weight:600;margin-top:6px;">
+         ▲ ${r.activeAggravating.length} facteur${r.activeAggravating.length > 1 ? 's' : ''} aggravant${r.activeAggravating.length > 1 ? 's' : ''} actif${r.activeAggravating.length > 1 ? 's' : ''} — criticité augmentée
+       </div>`
+    : '';
+
+  return `
+    <div class="risk-card ${levelClass}">
+      <div class="risk-card-header">
+        <div class="risk-name">${critIcon} ${r.nom}</div>
+        <span class="risk-badge">${r.criticite}</span>
+      </div>
+      <div class="severity-bar"><div class="severity-fill" style="width:${severityPct}%"></div></div>
+      <div class="risk-card-body">
+
+        <div class="risk-section">
+          <div class="risk-section-title">Définition</div>
+          <div class="risk-section-content">${r.definition}</div>
+        </div>
+
+        <div class="risk-section">
+          <div class="risk-section-title">Déclencheurs principaux actifs</div>
+          <div class="trigger-list">${primaryTags}</div>
+        </div>
+
+        <div class="risk-section">
+          <div class="risk-section-title">Facteurs aggravants actifs</div>
+          <div class="trigger-list">${aggTags}</div>
+          ${aggNote}
+        </div>
+
+        <div class="risk-section">
+          <div class="risk-section-title">Conséquences possibles</div>
+          <div class="risk-section-content">${r.consequences}</div>
+        </div>
+
+        <div class="risk-section">
+          <div class="risk-section-title">Mesures préventives</div>
+          <div class="risk-section-content">${r.preventive}</div>
+        </div>
+
+        <div class="risk-section">
+          <div class="risk-section-title">Solutions correctives</div>
+          <div class="risk-section-content">${r.corrective}</div>
+        </div>
+
+      </div>
+    </div>`;
+}
+
+function resetForm() {
+  ['f-sol','f-methode','f-env'].forEach(id => document.getElementById(id).value = '');
+  ['f-profondeur','f-nappe','f-diametre'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('results-section').style.display = 'none';
+}
+</script>
+</body>
+</html>
