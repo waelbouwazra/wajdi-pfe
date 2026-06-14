@@ -74,10 +74,10 @@ export default function ResultsPage({ user, onLogout, analysis, onBack }) {
 
 function Chip({ color, children }) {
   const palette = {
-    danger:  { bg: '#fde8e8', color: '#c0392b', border: '#f5c6c6' },
-    warning: { bg: '#fef0e2', color: '#d35400', border: '#f8d5b0' },
-    medium:  { bg: '#e3f0fb', color: '#2980b9', border: '#b0d4f1' },
-    ok:      { bg: '#e3f7ed', color: '#1a6b3c', border: '#a8dfc0' },
+    danger:  { bg: 'rgba(192,57,43,0.15)',  color: '#ff6b6b', border: 'rgba(192,57,43,0.4)' },
+    warning: { bg: 'rgba(211,84,0,0.15)',   color: '#f57c00', border: 'rgba(211,84,0,0.4)' },
+    medium:  { bg: 'rgba(41,128,185,0.15)', color: '#4a8aff', border: 'rgba(41,128,185,0.4)' },
+    ok:      { bg: 'rgba(40,200,100,0.12)', color: '#4cdb8a', border: 'rgba(40,200,100,0.3)' },
   }[color];
   return (
     <span style={{
@@ -90,20 +90,20 @@ function Chip({ color, children }) {
 }
 
 const styles = {
-  page: { minHeight: '100vh', background: '#f0f2f5', display: 'flex', flexDirection: 'column' },
+  page: { minHeight: '100vh', background: '#06111f', display: 'flex', flexDirection: 'column' },
   topRow: { marginBottom: 16 },
   backBtn: {
-    background: '#fff', color: '#1a3a5c',
-    border: '1.5px solid #dde2ea', borderRadius: 8,
+    background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.8)',
+    border: '1.5px solid rgba(255,255,255,0.12)', borderRadius: 8,
     padding: '10px 18px', fontSize: 14, fontWeight: 600,
-    cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,.07)',
+    cursor: 'pointer', fontFamily: 'inherit',
   },
   pageHeader: { marginBottom: 16 },
-  pageTitle: { fontSize: 22, fontWeight: 700, color: '#1a3a5c', margin: 0 },
-  paramLine: { fontSize: 13, color: '#637488', marginTop: 5, marginBottom: 0, lineHeight: 1.5 },
+  pageTitle: { fontSize: 22, fontWeight: 700, color: '#ffffff', margin: 0 },
+  paramLine: { fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 5, marginBottom: 0, lineHeight: 1.5 },
   chips: { display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 },
   noRisk: {
-    background: '#e3f7ed', border: '1.5px solid #a8dfc0',
-    borderRadius: 12, padding: 40, textAlign: 'center', color: '#1a6b3c',
+    background: 'rgba(40,200,100,0.08)', border: '1.5px solid rgba(40,200,100,0.25)',
+    borderRadius: 12, padding: 40, textAlign: 'center', color: '#4cdb8a',
   },
 };

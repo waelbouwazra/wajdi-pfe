@@ -1,56 +1,92 @@
-export default function Topbar({ user, onLogout }) {
+export default function Topbar({ user, onLogout, onMenu }) {
+  const initials = user
+    ? user.split('@')[0].slice(0, 2).toUpperCase()
+    : 'AD';
+
   return (
-    <nav style={styles.topbar}>
-      <div style={styles.brand}>
-        <div style={styles.brandIcon}>⚠</div>
-        <div>
-          <div style={styles.brandTitle}>GRISK</div>
-          <div className="topbar-brand-sub" style={styles.brandSub}>
-            Risques Géotechniques — Tunisie
-          </div>
+    <nav style={s.topbar}>
+      <div style={s.left}>
+        <div style={{ ...s.hamburger, cursor: onMenu ? 'pointer' : 'default' }} onClick={onMenu}>
+          <span style={s.hLine} />
+          <span style={s.hLine} />
+          <span style={s.hLine} />
+        </div>
+        <div style={s.brand}>
+          <span style={s.brandG}>G</span>
+          <span style={s.brandRisk}>RISK</span>
         </div>
       </div>
-      <div style={styles.right}>
-        <span className="topbar-user-email" style={styles.userLabel}>{user}</span>
-        <button style={styles.logoutBtn} onClick={onLogout}>Déconnexion</button>
-      </div>
+      <button style={s.avatar} onClick={onLogout} title={`${user} — Déconnexion`}>
+        {initials}
+      </button>
     </nav>
   );
 }
 
-const styles = {
+const s = {
   topbar: {
-    background: '#1a3a5c',
+    background: '#06111f',
+    borderBottom: '1px solid rgba(255,255,255,0.07)',
     padding: '0 20px',
-    height: 56,
+    height: 60,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    boxShadow: '0 2px 8px rgba(0,0,0,.2)',
     position: 'sticky',
     top: 0,
     zIndex: 100,
   },
-  brand: { display: 'flex', alignItems: 'center', gap: 10 },
-  brandIcon: {
-    width: 34, height: 34,
-    background: 'rgba(255,255,255,.15)',
-    borderRadius: 8,
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: 16, flexShrink: 0,
+  left: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
   },
-  brandTitle: { fontSize: 17, fontWeight: 700, letterSpacing: -0.3, color: '#fff' },
-  brandSub: { fontSize: 11, opacity: 0.65, color: '#fff' },
-  right: { display: 'flex', alignItems: 'center', gap: 10 },
-  userLabel: { color: 'rgba(255,255,255,.8)', fontSize: 13 },
-  logoutBtn: {
-    background: 'rgba(255,255,255,.12)',
-    color: '#fff',
-    border: '1px solid rgba(255,255,255,.2)',
-    padding: '7px 14px',
-    borderRadius: 6,
-    fontSize: 13,
+  hamburger: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 5,
     cursor: 'pointer',
-    whiteSpace: 'nowrap',
+    padding: 4,
+  },
+  hLine: {
+    display: 'block',
+    width: 22,
+    height: 2,
+    background: 'rgba(255,255,255,0.65)',
+    borderRadius: 1,
+  },
+  brand: {
+    display: 'flex',
+    alignItems: 'baseline',
+  },
+  brandG: {
+    fontSize: 22,
+    fontWeight: 900,
+    color: '#f57c00',
+    fontFamily: '"Arial Black", Arial, sans-serif',
+    letterSpacing: -0.5,
+  },
+  brandRisk: {
+    fontSize: 22,
+    fontWeight: 900,
+    color: '#ffffff',
+    fontFamily: '"Arial Black", Arial, sans-serif',
+    letterSpacing: -0.5,
+  },
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: '50%',
+    background: 'transparent',
+    border: '2px solid #f57c00',
+    color: '#f57c00',
+    fontSize: 13,
+    fontWeight: 700,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    fontFamily: 'inherit',
   },
 };

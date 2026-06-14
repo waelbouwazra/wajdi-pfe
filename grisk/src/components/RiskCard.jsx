@@ -3,19 +3,19 @@ import { TRIGGER_LABELS, RISK_IMAGES } from '../data/risks';
 
 const LEVEL_STYLES = {
   Critique: {
-    border: '#f5c6c6', bg: '#fff8f8', headerBg: '#fde8e8',
-    nameColor: '#c0392b', badgeBg: '#c0392b', barColor: '#c0392b',
-    icon: '⛔', barPct: 100, recBorder: '#fbd5d5', recBg: '#fff2f2',
+    border: 'rgba(192,57,43,0.45)', bg: '#0f1e28', headerBg: 'rgba(192,57,43,0.15)',
+    nameColor: '#ff6b6b', badgeBg: '#c0392b', barColor: '#e74c3c',
+    icon: '⛔', barPct: 100, recBorder: 'rgba(192,57,43,0.3)', recBg: 'rgba(192,57,43,0.07)',
   },
   Élevée: {
-    border: '#f8d5b0', bg: '#fffaf5', headerBg: '#fef0e2',
-    nameColor: '#d35400', badgeBg: '#d35400', barColor: '#d35400',
-    icon: '⚠', barPct: 68, recBorder: '#f8d5b0', recBg: '#fff8f0',
+    border: 'rgba(211,84,0,0.45)', bg: '#0f1e28', headerBg: 'rgba(211,84,0,0.15)',
+    nameColor: '#f57c00', badgeBg: '#d35400', barColor: '#e67e22',
+    icon: '⚠', barPct: 68, recBorder: 'rgba(211,84,0,0.3)', recBg: 'rgba(211,84,0,0.07)',
   },
   Moyenne: {
-    border: '#b0d4f1', bg: '#f5faff', headerBg: '#e3f0fb',
-    nameColor: '#2980b9', badgeBg: '#2980b9', barColor: '#2980b9',
-    icon: 'ℹ', barPct: 38, recBorder: '#b0d4f1', recBg: '#eef6ff',
+    border: 'rgba(41,128,185,0.45)', bg: '#0f1e28', headerBg: 'rgba(41,128,185,0.15)',
+    nameColor: '#4a8aff', badgeBg: '#2980b9', barColor: '#2980b9',
+    icon: 'ℹ', barPct: 38, recBorder: 'rgba(41,128,185,0.3)', recBg: 'rgba(41,128,185,0.07)',
   },
 };
 
@@ -242,7 +242,7 @@ const styles = {
     fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px',
     color: '#fff', whiteSpace: 'nowrap', flexShrink: 0,
   },
-  barTrack: { height: 5, background: '#f0f2f5' },
+  barTrack: { height: 5, background: 'rgba(255,255,255,0.08)' },
   barFill: { height: '100%', transition: 'width .6s ease' },
 
   // Image
@@ -254,19 +254,19 @@ const styles = {
   section: { marginBottom: 12 },
   sectionTitle: {
     fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-    letterSpacing: '0.6px', color: '#637488', marginBottom: 5,
+    letterSpacing: '0.6px', color: 'rgba(255,255,255,0.45)', marginBottom: 5,
   },
-  sectionContent: { fontSize: 14, color: '#1c2b3a', lineHeight: 1.6, margin: 0 },
+  sectionContent: { fontSize: 14, color: 'rgba(255,255,255,0.82)', lineHeight: 1.6, margin: 0 },
   tagRow: { display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 },
   tagPrimary: {
     padding: '4px 10px', borderRadius: 6, fontSize: 12,
-    fontWeight: 600, background: '#fde8e8', color: '#c0392b',
+    fontWeight: 600, background: 'rgba(192,57,43,0.18)', color: '#ff6b6b',
   },
   tagAggravant: {
     padding: '4px 10px', borderRadius: 6, fontSize: 12,
-    fontWeight: 600, background: '#fff3cd', color: '#856404',
+    fontWeight: 600, background: 'rgba(211,84,0,0.15)', color: '#f57c00',
   },
-  aggNote: { fontSize: 12, color: '#d35400', fontWeight: 600, marginTop: 6, marginBottom: 0 },
+  aggNote: { fontSize: 12, color: '#f57c00', fontWeight: 600, marginTop: 6, marginBottom: 0 },
 
   // Recommendations
   recSection: {
@@ -277,49 +277,51 @@ const styles = {
   },
   recTitle: {
     fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-    letterSpacing: '0.6px', color: '#637488',
+    letterSpacing: '0.6px', color: 'rgba(255,255,255,0.4)',
     display: 'flex', alignItems: 'center', gap: 6,
   },
   recCount: {
-    background: '#1a3a5c', color: '#fff',
+    background: 'rgba(74,138,255,0.2)', color: '#4a8aff',
     borderRadius: 10, padding: '1px 7px', fontSize: 11, fontWeight: 700,
   },
   addBtn: {
-    background: '#1a3a5c', color: '#fff', border: 'none',
-    borderRadius: 6, padding: '6px 13px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+    background: 'rgba(74,138,255,0.15)', color: '#4a8aff', border: '1px solid rgba(74,138,255,0.3)',
+    borderRadius: 6, padding: '6px 13px', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
   },
-  emptyText: { fontSize: 12, color: '#8a9bb0', margin: 0, fontStyle: 'italic' },
+  emptyText: { fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: 0, fontStyle: 'italic' },
   recList: { display: 'flex', flexDirection: 'column', gap: 8 },
   recItem: {
-    background: '#fff', borderRadius: 7, padding: '10px 12px',
-    border: '1px solid rgba(0,0,0,.07)',
+    background: 'rgba(255,255,255,0.04)', borderRadius: 7, padding: '10px 12px',
+    border: '1px solid rgba(255,255,255,0.07)',
   },
-  recContent: { fontSize: 13.5, color: '#1c2b3a', lineHeight: 1.5, margin: '0 0 6px 0' },
+  recContent: { fontSize: 13.5, color: 'rgba(255,255,255,0.8)', lineHeight: 1.5, margin: '0 0 6px 0' },
   recMeta: { display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' },
-  recAuthor: { fontSize: 11, fontWeight: 700, color: '#1a3a5c' },
-  recDate: { fontSize: 11, color: '#8a9bb0' },
+  recAuthor: { fontSize: 11, fontWeight: 700, color: '#4a8aff' },
+  recDate: { fontSize: 11, color: 'rgba(255,255,255,0.35)' },
 
   // Form
   form: { display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 },
   textarea: {
     width: '100%', padding: '10px 12px',
-    border: '1.5px solid #dde2ea', borderRadius: 7,
-    fontSize: 14, color: '#1c2b3a', resize: 'vertical',
+    border: '1.5px solid rgba(100,150,255,0.2)', borderRadius: 7,
+    fontSize: 14, color: '#fff', resize: 'vertical',
     fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+    background: 'rgba(255,255,255,0.05)',
   },
   authorInput: {
     width: '100%', padding: '10px 12px',
-    border: '1.5px solid #dde2ea', borderRadius: 7,
-    fontSize: 14, color: '#1c2b3a', outline: 'none', boxSizing: 'border-box',
+    border: '1.5px solid rgba(100,150,255,0.2)', borderRadius: 7,
+    fontSize: 14, color: '#fff', outline: 'none', boxSizing: 'border-box',
+    background: 'rgba(255,255,255,0.05)', fontFamily: 'inherit',
   },
-  formError: { fontSize: 12, color: '#c0392b', margin: 0 },
+  formError: { fontSize: 12, color: '#ff6b6b', margin: 0 },
   formActions: { display: 'flex', gap: 8 },
   submitBtn: {
-    flex: 1, padding: '11px 18px', background: '#1a3a5c', color: '#fff',
-    border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 700, cursor: 'pointer',
+    flex: 1, padding: '11px 18px', background: 'linear-gradient(135deg, #1a5aff, #4a8aff)', color: '#fff',
+    border: 'none', borderRadius: 6, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
   },
   cancelBtn: {
-    padding: '11px 14px', background: 'transparent', color: '#637488',
-    border: '1.5px solid #dde2ea', borderRadius: 6, fontSize: 14, cursor: 'pointer',
+    padding: '11px 14px', background: 'transparent', color: 'rgba(255,255,255,0.45)',
+    border: '1.5px solid rgba(255,255,255,0.12)', borderRadius: 6, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit',
   },
 };

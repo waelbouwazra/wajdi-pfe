@@ -5,7 +5,7 @@ body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f0f2f5;
+  background: #06111f;
 }
 
 /* ── Layout ──────────────────────────────────────────── */
@@ -52,7 +52,7 @@ body {
   }
 }
 
-/* ── Login card padding ──────────────────────────────── */
+/* ── Login card padding (legacy) ─────────────────────── */
 .login-card-inner {
   padding: 36px 24px;
 }
@@ -61,6 +61,22 @@ body {
   .login-card-inner {
     padding: 48px 40px;
   }
+}
+
+/* ── Dark input number spinner hide ─────────────────── */
+.dark-input::-webkit-outer-spin-button,
+.dark-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.dark-input[type=number] {
+  -moz-appearance: textfield;
+}
+.dark-input::placeholder {
+  color: rgba(255, 255, 255, 0.28);
+}
+.dark-input:focus {
+  outline: none;
 }
 
 /* ── Topbar helpers ──────────────────────────────────── */
@@ -79,17 +95,17 @@ body {
 /* ── Field label & hint ──────────────────────────────── */
 .field-label {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: #1c2b3a;
+  color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 7px;
+  letter-spacing: 0.7px;
+  margin-bottom: 8px;
 }
 
 .field-hint {
-  font-size: 12px;
-  color: #637488;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.38);
   margin-top: 5px;
   line-height: 1.4;
 }
@@ -99,12 +115,12 @@ body {
 .field-select {
   width: 100%;
   padding: 14px 16px;
-  border: 1.5px solid #dde2ea;
+  border: 1.5px solid rgba(100, 150, 255, 0.2);
   border-radius: 10px;
-  font-size: 16px;          /* 16px prevents iOS auto-zoom */
+  font-size: 16px;
   font-family: inherit;
-  color: #1c2b3a;
-  background-color: #fafbfc;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
   outline: none;
   transition: border-color 0.18s, box-shadow 0.18s;
   box-sizing: border-box;
@@ -114,20 +130,20 @@ body {
 }
 
 .field-input::placeholder {
-  color: #aab4c0;
+  color: rgba(255, 255, 255, 0.28);
 }
 
 .field-input:focus,
 .field-select:focus {
-  border-color: #1a3a5c;
-  box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.10);
-  background-color: #fff;
+  border-color: rgba(245, 124, 0, 0.55);
+  box-shadow: 0 0 0 3px rgba(245, 124, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.07);
 }
 
 /* Select — custom chevron */
 .field-select {
   padding-right: 44px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='%23637488' d='M6 7L0 0h12z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath fill='%234a8aff' d='M6 7L0 0h12z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 16px center;
   background-size: 12px 7px;
@@ -137,6 +153,8 @@ body {
 .field-select option,
 .field-select optgroup {
   font-size: 15px;
+  background: #0d1e30;
+  color: #ffffff;
 }
 
 /* Input with unit badge ─────────────────────────────── */
@@ -153,13 +171,13 @@ body {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: #637488;
+  color: #4a8aff;
   pointer-events: none;
-  background: #edf0f4;
+  background: rgba(74, 138, 255, 0.1);
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 5px;
   line-height: 1;
 }
 
