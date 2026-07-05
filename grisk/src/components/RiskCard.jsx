@@ -92,6 +92,13 @@ export default function RiskCard({ risk }) {
         <div style={{ ...styles.barFill, width: `${s.barPct}%`, background: s.barColor }} />
       </div>
 
+      {/* CFA compatibility warning */}
+      {risk.cfaWarning && (
+        <div style={styles.cfaWarning}>
+          ⚠ {risk.cfaWarning}
+        </div>
+      )}
+
       {/* Risk image */}
       {imgVisible && (
         <div style={styles.imgWrap}>
@@ -267,6 +274,11 @@ const styles = {
     fontWeight: 600, background: 'rgba(211,84,0,0.15)', color: '#f57c00',
   },
   aggNote: { fontSize: 12, color: '#f57c00', fontWeight: 600, marginTop: 6, marginBottom: 0 },
+  cfaWarning: {
+    margin: '0', padding: '8px 14px', fontSize: 12, fontWeight: 600,
+    background: 'rgba(255,200,0,0.12)', color: '#ffd740',
+    borderBottom: '1px solid rgba(255,200,0,0.2)',
+  },
 
   // Recommendations
   recSection: {

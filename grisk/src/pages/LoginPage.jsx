@@ -81,15 +81,7 @@ export default function LoginPage({ onLogin }) {
           <div style={s.hudOuter}>
             <div style={s.hudMiddle}>
               <div style={s.hudInner}>
-                <div style={s.logoRow}>
-                  <span style={s.logoG}>G</span>
-                  <span style={s.logoRisk}>RISK</span>
-                </div>
-                <div style={s.logoDecor}>
-                  <span style={s.decorLine} />
-                  <span style={s.decorSlash}>///</span>
-                  <span style={s.decorLine} />
-                </div>
+                <img src="/LOGO-GRISK.png" alt="GRISK" style={s.logoImg} />
               </div>
             </div>
           </div>
@@ -238,43 +230,10 @@ const s = {
     background: '#f57c00',
     opacity: 0.8,
   },
-  logoRow: {
-    display: 'flex',
-    alignItems: 'baseline',
-    lineHeight: 1,
-  },
-  logoG: {
-    fontSize: 36,
-    fontWeight: 900,
-    color: '#f57c00',
-    fontFamily: '"Arial Black", Arial, sans-serif',
-    letterSpacing: -1,
-  },
-  logoRisk: {
-    fontSize: 36,
-    fontWeight: 900,
-    color: '#ffffff',
-    fontFamily: '"Arial Black", Arial, sans-serif',
-    letterSpacing: -1,
-  },
-  logoDecor: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
-  },
-  decorLine: {
-    display: 'inline-block',
-    width: 16,
-    height: 2,
-    background: '#f57c00',
-    opacity: 0.8,
-  },
-  decorSlash: {
-    color: '#f57c00',
-    fontSize: 10,
-    letterSpacing: 2,
-    opacity: 0.8,
+  logoImg: {
+    height: 64,
+    width: 'auto',
+    objectFit: 'contain',
   },
   tagline: {
     textAlign: 'center',

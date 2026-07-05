@@ -11,10 +11,7 @@ export default function Topbar({ user, onLogout, onMenu }) {
           <span style={s.hLine} />
           <span style={s.hLine} />
         </div>
-        <div style={s.brand}>
-          <span style={s.brandG}>G</span>
-          <span style={s.brandRisk}>RISK</span>
-        </div>
+        <img src="/LOGO-GRISK.png" alt="GRISK" style={s.brand} />
       </div>
       <button style={s.avatar} onClick={onLogout} title={`${user} — Déconnexion`}>
         {initials}
@@ -56,22 +53,9 @@ const s = {
     borderRadius: 1,
   },
   brand: {
-    display: 'flex',
-    alignItems: 'baseline',
-  },
-  brandG: {
-    fontSize: 22,
-    fontWeight: 900,
-    color: '#f57c00',
-    fontFamily: '"Arial Black", Arial, sans-serif',
-    letterSpacing: -0.5,
-  },
-  brandRisk: {
-    fontSize: 22,
-    fontWeight: 900,
-    color: '#ffffff',
-    fontFamily: '"Arial Black", Arial, sans-serif',
-    letterSpacing: -0.5,
+    height: 34,
+    width: 'auto',
+    objectFit: 'contain',
   },
   avatar: {
     width: 38,

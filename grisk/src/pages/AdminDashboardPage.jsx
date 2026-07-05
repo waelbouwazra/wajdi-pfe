@@ -234,9 +234,7 @@ export default function AdminDashboardPage({ onLogout }) {
       }}>
         {/* Logo row */}
         <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <span style={{ fontSize: 24, fontWeight: 900, fontFamily: '"Arial Black", Arial, sans-serif', letterSpacing: -1 }}>
-            <span style={{ color: '#f57c00' }}>G</span><span style={{ color: '#fff' }}>RISK</span>
-          </span>
+          <img src="/LOGO-GRISK.png" alt="GRISK" style={{ height: 32, width: 'auto', objectFit: 'contain' }} />
           {isMobile && (
             <button onClick={closeSidebar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', display: 'flex', padding: 4 }}>
               <IcoClose />

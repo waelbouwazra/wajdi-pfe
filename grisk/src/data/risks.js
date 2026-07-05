@@ -1,9 +1,9 @@
 export const RISK_DB = [
   {
     id: 'R01',
-    nom: 'Effondrement des parois',
+    nom: 'Instabilité du forage',
     definition:
-      "Instabilité et effondrement des parois du forage pendant ou après le forage, pouvant entraîner la perte partielle ou totale du trou.",
+      "Instabilité des parois du forage pendant ou après l'exécution, pouvant provoquer un effondrement partiel ou total du trou, une perte de boue de forage ou un effondrement de surface.",
     methods: ['Pieux Forés', 'Parois moulées', 'Parois sécantes'],
     primaryTriggers: ['sol_granulaire', 'nappe_elevee'],
     aggravatingTriggers: ['sol_meuble', 'grande_profondeur'],
@@ -53,7 +53,7 @@ export const RISK_DB = [
     definition:
       "Volume de béton mis en œuvre nettement supérieur au volume théorique du pieu, indiquant des pertes dans le terrain environnant.",
     methods: ['Pieux Forés', 'Jet grouting', 'Parois moulées', 'Pieux CFA (Continuous Flight Auger)'],
-    primaryTriggers: ['sol_granulaire', 'nappe_elevee', 'cavites_naturelles'],
+    primaryTriggers: ['sol_granulaire', 'cavites_naturelles', 'sol_sature'],
     aggravatingTriggers: ['grande_profondeur', 'grand_diametre'],
     consequences:
       "Surcoût majeur, poids excessif non prévu, risque de bulbes de béton hors-profil, perturbation des ouvrages voisins.",
@@ -69,7 +69,7 @@ export const RISK_DB = [
     definition:
       "Rencontre d'une cavité naturelle (karst, vide géologique) ou anthropique (ancienne galerie, puits) lors du forage.",
     methods: ['Pieux Forés', 'Jet grouting', 'Parois moulées'],
-    primaryTriggers: ['cavites_naturelles', 'roche_dense'],
+    primaryTriggers: ['geologie_karstique', 'zone_instable'],
     aggravatingTriggers: ['grande_profondeur'],
     consequences:
       "Perte soudaine des outils de forage, effondrement local, risque de dommages en surface, projet compromis.",
@@ -169,23 +169,35 @@ export const TRIGGER_LABELS = {
   sol_heterogene: 'Sol hétérogène',
   roche_dense: 'Roche / Sol dense',
   sol_meuble: 'Sol meuble',
+  sol_sature: 'Sol saturé',
   cavites_naturelles: 'Cavités naturelles',
-  grande_profondeur: 'Grande profondeur (> 20 m)',
-  grand_diametre: 'Grand diamètre (> 800 mm)',
+  geologie_karstique: 'Géologie karstique',
+  zone_instable: 'Zone géologiquement instable',
+  grande_profondeur: 'Grande profondeur (≥ 30 m)',
+  grand_diametre: 'Grand diamètre (≥ 800 mm)',
 };
 
 export function classifyConditions(sol, profondeur, diametre, nappe, env) {
+  const karstique = CAVITES_NAT.has(sol);
+  const instable = env != null && (env.includes('instable') || env.includes('karstique') || env.includes('fluviale'));
   return {
     sol_granulaire: SOL_GRANULAIRE.has(sol),
     nappe_elevee: nappe !== null && nappe < 3.0,
     sol_heterogene: SOL_HETEROGENE.has(sol),
     roche_dense: ROCHE_DENSE.has(sol),
     sol_meuble: SOL_MEUBLE.has(sol),
-    cavites_naturelles:
-      CAVITES_NAT.has(sol) ||
-      (env && (env.includes('instable') || env.includes('rocheuse') || env.includes('fluviale'))),
-    grande_profondeur: profondeur !== null && profondeur > 20,
-    grand_diametre: diametre !== null && diametre > 800,
+    // sol_sature: specific soil type OR very shallow water table (< 1 m)
+    sol_sature: sol === 'Sol saturé' || (nappe !== null && nappe < 1.0),
+    // Karstic geology: soil types associated with dissolution/voids
+    geologie_karstique: karstique,
+    // Geologically unstable zone: derived from environment
+    zone_instable: instable,
+    // cavites_naturelles kept for backward compat with R04
+    cavites_naturelles: karstique || instable || env?.includes('rocheuse'),
+    // Référentiel & Seuils v2.0: Grande profondeur >= 30 m (was > 20 m)
+    grande_profondeur: profondeur !== null && profondeur >= 30,
+    // Référentiel & Seuils v2.0: Grand diamètre >= 800 mm
+    grand_diametre: diametre !== null && diametre >= 800,
   };
 }
 
@@ -200,8 +212,16 @@ export const RISK_IMAGES = {
   R08: 'Perte de verticalité.png',
 };
 
+// Référentiel & Seuils v2.0 — CFA is only valid with Faible depth (<15 m) AND Faible diameter (<500 mm)
+const CFA_METHOD = 'Pieux CFA (Continuous Flight Auger)';
+
 export function computeRisks(sol, methode, profondeur, nappe, diametre, env) {
   const cond = classifyConditions(sol, profondeur, diametre, nappe, env);
+  const isCFA = methode === CFA_METHOD;
+  // CFA dimension classes per Référentiel & Seuils
+  const cfaDepthExceeded = isCFA && profondeur !== null && profondeur >= 15;
+  const cfaDiamExceeded = isCFA && diametre !== null && diametre >= 500;
+
   const triggered = [];
 
   for (const risk of RISK_DB) {
@@ -213,19 +233,53 @@ export function computeRisks(sol, methode, profondeur, nappe, diametre, env) {
     const activePrimary = risk.primaryTriggers.filter((t) => cond[t]);
     if (activePrimary.length === 0) continue;
 
-    const activeAggravating = risk.aggravatingTriggers.filter((t) => cond[t]);
+    let activeAggravating = risk.aggravatingTriggers.filter((t) => cond[t]);
+
+    // CFA-specific overrides (Variables Développeur v2.0):
+    // R02, R08: depth/diameter aggravants are suppressed for CFA (CFA has fixed shallow/narrow profile)
+    if (isCFA && (risk.id === 'R02' || risk.id === 'R08')) {
+      activeAggravating = activeAggravating.filter(
+        (t) => t !== 'grande_profondeur' && t !== 'grand_diametre'
+      );
+    }
+    // R06: Grand diamètre is not a valid aggravant for CFA; only SOL_HETEROGENE applies
+    if (isCFA && risk.id === 'R06') {
+      activeAggravating = activeAggravating.filter((t) => t !== 'grand_diametre');
+    }
+    // R07: depth+saturation aggravant only applies to Jet grouting, not CFA
+    if (isCFA && risk.id === 'R07') {
+      activeAggravating = activeAggravating.filter((t) => t !== 'grande_profondeur');
+    }
+
+    // Global aggravation rule (Référentiel & Seuils v2.0):
+    // Grande profondeur (>=30 m) or Sol saturé aggravates ALL risks
+    const globalAggravated = cond.grande_profondeur || cond.sol_sature;
 
     let criticite = risk.baseCriticite;
-    if (activeAggravating.length >= 2) {
+    const aggCount = activeAggravating.length + (globalAggravated ? 1 : 0);
+    if (aggCount >= 2) {
       criticite = 'Critique';
-    } else if (activeAggravating.length === 1 && risk.baseCriticite === 'Élevée') {
+    } else if (aggCount === 1 && risk.baseCriticite === 'Élevée') {
       criticite = 'Critique';
-    } else if (activeAggravating.length === 1 && risk.baseCriticite === 'Moyenne') {
+    } else if (aggCount === 1 && risk.baseCriticite === 'Moyenne') {
       criticite = 'Élevée';
     }
 
+    // Warn if CFA is used outside its compatible range
+    const cfaWarning =
+      isCFA && (cfaDepthExceeded || cfaDiamExceeded)
+        ? 'Méthode Pieux CFA hors de sa plage compatible (profondeur < 15 m ET diamètre < 500 mm requises).'
+        : null;
+
     const scoreMap = { Critique: 3, Élevée: 2, Moyenne: 1 };
-    triggered.push({ ...risk, criticite, activePrimary, activeAggravating, score: scoreMap[criticite] || 1 });
+    triggered.push({
+      ...risk,
+      criticite,
+      activePrimary,
+      activeAggravating,
+      cfaWarning,
+      score: scoreMap[criticite] || 1,
+    });
   }
 
   return triggered.sort((a, b) => b.score - a.score);

@@ -42,7 +42,7 @@ DECLARE
   niveaux   TEXT[] := ARRAY['Élevé','Élevé','Moyen','Moyen','Moyen','Moyen','Faible','Faible','Faible','Très faible'];
   rand_date DATE;
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM risques_notes LIMIT 1) THEN
+  IF (SELECT COUNT(*) FROM risques_notes) < 5 THEN
     FOR i IN 1..80 LOOP
       rand_date := (NOW() - interval '5 months')::DATE + (floor(random() * 150))::INT;
       INSERT INTO risques_notes
@@ -68,10 +68,10 @@ END $$;
 DO $$
 DECLARE i INT;
 BEGIN
-  IF NOT EXISTS (SELECT 1 FROM recommendations LIMIT 1) THEN
+  IF (SELECT COUNT(*) FROM recommendations) < 5 THEN
     FOR i IN 1..50 LOOP
       INSERT INTO recommendations (risk_id, risk_name, content, author)
-      VALUES ('R001','Effondrement des parois',
+      VALUES ('R001','Instabilité du forage',
               'Vérifier la stabilité des parois. Recommandation #' || i, 'Technicien');
     END LOOP;
     FOR i IN 1..38 LOOP
